@@ -8,9 +8,9 @@ public class Game {
 
     }
     public void startGame(){
-        gameWindow = new GameWindow();
+        gameWindow = new GameWindow("Cola Engine", 1920, 1080);
 
-        gameWindow.setTitle("Cola Engine");
+        gameWindow.setTitle("Cola Engine v0.1.0");
         gameWindow.setResolution(1280, 768);
 
     }
