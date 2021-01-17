@@ -6,12 +6,9 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL45;
 import org.lwjgl.system.MemoryStack;
 
-import java.awt.event.KeyEvent;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFW.glfwShowWindow;
-import static org.lwjgl.opengl.GL.*;
 import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -85,13 +82,17 @@ public class GameWindow{
 
             // Get the resolution of the primary monitor
             GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-
-            // Center the window
-            glfwSetWindowPos(
-                    window,
-                    (vidmode.width() - pWidth.get(0)) / 2,
-                    (vidmode.height() - pHeight.get(0)) / 2
-            );
+                // Center the window
+                if (vidmode != null) {
+                    glfwSetWindowPos(
+                            window,
+                            (vidmode.width() - pWidth.get(0)) / 2,
+                            (vidmode.height() - pHeight.get(0)) / 2
+                    );
+                }
+                    else{
+                    System.out.println("GLFW: No video mode set!");
+                }
         } // the stack frame is popped automatically
 
         // Make the OpenGL context current
@@ -100,7 +101,6 @@ public class GameWindow{
         glfwSwapInterval(1);
         // Make the window visible
         glfwShowWindow(window);
-
 
 /*
 try {
@@ -223,5 +223,26 @@ try {
         if(callback != null) {
             callback.windowClosed();
         }
+    }
+
+    /**
+     * @return The width of the GameWindow
+     */
+    public int getWidth() {
+        return width;
+    }
+
+    /**
+     * @return The height of the GameWindow
+     */
+    public int getHeight() {
+        return height;
+    }
+
+    /**
+     * @return The title of the GameWindow
+     */
+    public String getTitle() {
+        return title;
     }
 }
