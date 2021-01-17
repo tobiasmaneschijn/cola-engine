@@ -1,6 +1,6 @@
 package com.tobiasmaneschijn.core;
 
-import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL45;
 
 import java.io.IOException;
 
@@ -60,31 +60,31 @@ public class Sprite {
      */
     public void draw(int x, int y) {
         // store the current model matrix
-        GL11.glPushMatrix();
+        GL45.glPushMatrix();
 
         // bind to the appropriate texture for this sprite
         texture.bind();
 
         // translate to the right location and prepare to draw
-        GL11.glTranslatef(x, y, 0);
-        GL11.glColor3f(1,1,1);
+        GL45.glTranslatef(x, y, 0);
+        GL45.glColor3f(1,1,1);
 
         // draw a quad textured to match the sprite
-        GL11.glBegin(GL11.GL_QUADS);
+        GL45.glBegin(GL45.GL_QUADS);
         {
-            GL11.glTexCoord2f(0, 0);
-            GL11.glVertex2f(0, 0);
-            GL11.glTexCoord2f(0, texture.getHeight());
-            GL11.glVertex2f(0, height);
-            GL11.glTexCoord2f(texture.getWidth(), texture.getHeight());
-            GL11.glVertex2f(width,height);
-            GL11.glTexCoord2f(texture.getWidth(), 0);
-            GL11.glVertex2f(width,0);
+            GL45.glTexCoord2f(0, 0);
+            GL45.glVertex2f(0, 0);
+            GL45.glTexCoord2f(0, texture.getHeight());
+            GL45.glVertex2f(0, height);
+            GL45.glTexCoord2f(texture.getWidth(), texture.getHeight());
+            GL45.glVertex2f(width,height);
+            GL45.glTexCoord2f(texture.getWidth(), 0);
+            GL45.glVertex2f(width,0);
         }
-        GL11.glEnd();
+        GL45.glEnd();
 
         // restore the model view matrix to prevent contamination
-        GL11.glPopMatrix();
+        GL45.glPopMatrix();
     }
 
 }

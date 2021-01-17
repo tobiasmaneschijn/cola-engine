@@ -18,10 +18,11 @@ import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Objects;
 
 import javax.imageio.ImageIO;
 
-import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL45;
 
 
 public class TextureLoader {
@@ -37,7 +38,6 @@ public class TextureLoader {
     /**
      * Create a new texture loader based on the game panel
      *
-     * @param gl The GL content in which the textures should be loaded
      */
     public TextureLoader() {
         glAlphaColorModel = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB),
@@ -63,7 +63,7 @@ public class TextureLoader {
     private int createTextureID()
     {
         IntBuffer tmp = createIntBuffer(1);
-        GL11.glGenTextures(tmp);
+        GL45.glGenTextures(tmp);
         return tmp.get(0);
     }
 
@@ -82,10 +82,10 @@ public class TextureLoader {
         }
 
         tex = getTexture(resourceName,
-                GL11.GL_TEXTURE_2D, // target
-                GL11.GL_RGBA,     // dst pixel format
-                GL11.GL_LINEAR, // min filter (unused)
-                GL11.GL_LINEAR);
+                GL45.GL_TEXTURE_2D, // target
+                GL45.GL_RGBA,     // dst pixel format
+                GL45.GL_LINEAR, // min filter (unused)
+                GL45.GL_LINEAR);
 
         table.put(resourceName,tex);
 
@@ -117,36 +117,36 @@ public class TextureLoader {
         Texture texture = new Texture(target,textureID);
 
         // bind this texture
-        GL11.glBindTexture(target, textureID);
+        GL45.glBindTexture(target, textureID);
 
         BufferedImage bufferedImage = loadImage(resourceName);
         texture.setWidth(bufferedImage.getWidth());
         texture.setHeight(bufferedImage.getHeight());
 
         if (bufferedImage.getColorModel().hasAlpha()) {
-            srcPixelFormat = GL11.GL_RGBA;
+            srcPixelFormat = GL45.GL_RGBA;
         } else {
-            srcPixelFormat = GL11.GL_RGB;
+            srcPixelFormat = GL45.GL_RGB;
         }
 
         // convert that image into a byte buffer of texture data
         ByteBuffer textureBuffer = convertImageData(bufferedImage,texture);
 
-        if (target == GL11.GL_TEXTURE_2D)
+        if (target == GL45.GL_TEXTURE_2D)
         {
-            GL11.glTexParameteri(target, GL11.GL_TEXTURE_MIN_FILTER, minFilter);
-            GL11.glTexParameteri(target, GL11.GL_TEXTURE_MAG_FILTER, magFilter);
+            GL45.glTexParameteri(target, GL45.GL_TEXTURE_MIN_FILTER, minFilter);
+            GL45.glTexParameteri(target, GL45.GL_TEXTURE_MAG_FILTER, magFilter);
         }
 
         // produce a texture from the byte buffer
-        GL11.glTexImage2D(target,
+        GL45.glTexImage2D(target,
                 0,
                 dstPixelFormat,
                 get2Fold(bufferedImage.getWidth()),
                 get2Fold(bufferedImage.getHeight()),
                 0,
                 srcPixelFormat,
-                GL11.GL_UNSIGNED_BYTE,
+                GL45.GL_UNSIGNED_BYTE,
                 textureBuffer );
 
         return texture;
@@ -236,9 +236,7 @@ public class TextureLoader {
             throw new IOException("Cannot find: "+ref);
         }
 
-        BufferedImage bufferedImage = ImageIO.read(new BufferedInputStream(getClass().getClassLoader().getResourceAsStream(ref)));
-
-        return bufferedImage;
+        return ImageIO.read(new BufferedInputStream(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(ref))));
     }
 
     /**

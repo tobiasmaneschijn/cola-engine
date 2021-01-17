@@ -70,7 +70,7 @@ public class ResourceFactory {
      *
      * @return The game window in which the game should be rendered
      */
-    public GameWindow getGameWindow() {
+    public GameWindow getWindow() {
         // if we've yet to create the game window, create the appropriate one
         // now
         if (window == null) {
@@ -80,6 +80,10 @@ public class ResourceFactory {
         }
 
         return window;
+    }
+
+    public void setWindow(GameWindow window) {
+        this.window = window;
     }
 
     /**
@@ -95,7 +99,7 @@ public class ResourceFactory {
         }
 
         if (renderingType == OPENGL_LWJGL) {
-            return new Sprite((GameWindow) window, ref);
+            return new Sprite(window, ref);
         }
 
         throw new RuntimeException("Unknown rendering type: "+renderingType);

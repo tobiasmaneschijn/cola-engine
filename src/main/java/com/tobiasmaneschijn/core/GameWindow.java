@@ -9,7 +9,7 @@ import org.lwjgl.system.MemoryStack;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.glClearColor;
+import static org.lwjgl.opengl.GL45.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -21,26 +21,36 @@ public class GameWindow{
     private long window;
 
     /** The width of the game display area */
-    private int width;
+    private int width = 1024;
 
     /** The height of the game display area */
-    private int height;
+    private int height = 768;
 
     /** The loader responsible for converting images into OpenGL textures */
     private TextureLoader textureLoader;
 
     /** Title of window, we get it before our window is ready, so store it till needed */
-    private String title;
+    private String title = "";
 
     /**
      * Create a new game window that will use OpenGL to
      * render our game.
+
      */
     public GameWindow() {
         init();
         loop();
     }
 
+    public GameWindow(String title, int width, int height,  GameWindowCallback callback) {
+        this.title = title;
+        this.width = width;
+        this.height = height;
+        setGameWindowCallback(callback);
+
+        init();
+        loop();
+    }
     private void init(){
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
@@ -56,7 +66,7 @@ public class GameWindow{
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
         // Create the window
-        window = glfwCreateWindow(300, 300, "Hello World!", NULL, NULL);
+        window = glfwCreateWindow(width, height, title, NULL, NULL);
         if ( window == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
@@ -66,8 +76,13 @@ public class GameWindow{
                 glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
         });
 
+        // Make the OpenGL context current
+        glfwMakeContextCurrent(window);
+        GL.createCapabilities();
+
         textureLoader = new TextureLoader();
 
+        ResourceFactory.get().setWindow(this);
         if(callback != null) {
             callback.initialise();
         }
@@ -95,13 +110,11 @@ public class GameWindow{
                 }
         } // the stack frame is popped automatically
 
-        // Make the OpenGL context current
-        glfwMakeContextCurrent(window);
+
         // Enable v-sync
         glfwSwapInterval(1);
         // Make the window visible
         glfwShowWindow(window);
-
 /*
 try {
             // enable textures since we're going to use these for our sprites
@@ -127,12 +140,42 @@ try {
         gameLoop();
   */
         }
+    /**
+     * Run the main game loop. This method keeps rendering the scene
+     * and requesting that the callback update its screen.
+     */
+    private void loop() {
+        GL.createCapabilities(); // Needed for LWJGL.
 
+        // Set the clear color
+        glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+
+        while (!glfwWindowShouldClose(window)) {
+
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+
+            // let subsystem paint
+            if (callback != null) {
+                callback.draw();
+            }
+
+            glfwSwapBuffers(window); // Swap the color buffers
+
+            // Poll for window events. The key callback above will only be
+            // invoked during this call.
+            glfwPollEvents();
+
+        }
+
+        if(callback != null) {
+            callback.windowClosed();
+        }
+    }
     /**
      * Retrieve access to the texture loader that converts images
-     * into OpenGL textures. Note, this has been made package level
-     * since only other parts of the JOGL implementations need to access
-     * it.
+     * into OpenGL textures.
      *
      * @return The texture loader that can be used to load images into
      * OpenGL textures.
@@ -185,45 +228,11 @@ try {
      * @return True if the specified key is pressed
      */
     public boolean isKeyPressed(int keyCode) {
-
-        return false;
+       int state = glfwGetKey(window, keyCode);
+        return state == GLFW_PRESS;
     }
 
-    /**
-     * Run the main game loop. This method keeps rendering the scene
-     * and requesting that the callback update its screen.
-     */
-    private void loop() {
-        GL.createCapabilities(); // Needed for LWJGL.
 
-
-        // Set the clear color
-        glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
-
-        while (!glfwWindowShouldClose(window)) {
-
-
-
-
-            GL45.glClear(GL45.GL_COLOR_BUFFER_BIT | GL45.GL_DEPTH_BUFFER_BIT);
-
-            // let subsystem paint
-            if (callback != null) {
-                callback.frameRendering();
-            }
-
-            glfwSwapBuffers(window); // Swap the color buffers
-
-            // Poll for window events. The key callback above will only be
-            // invoked during this call.
-            glfwPollEvents();
-
-        }
-
-        if(callback != null) {
-            callback.windowClosed();
-        }
-    }
 
     /**
      * @return The width of the GameWindow

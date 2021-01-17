@@ -15,9 +15,9 @@ public interface GameWindowCallback {
 
     /**
      * Notification that the display is being rendered. The implementor
-     * should render the scene and update any game logic
+     * should draw/render the scene and update any game logic
      */
-    public void frameRendering();
+    public void draw();
 
     /**
      * Notification that game window has been closed.
