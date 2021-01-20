@@ -1,8 +1,11 @@
 package com.tobiasmaneschijn.core;
 
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL45;
 
 import java.io.IOException;
+import java.nio.FloatBuffer;
 
 public class Sprite {
     /** The texture that stores the image for this sprite */
@@ -14,6 +17,12 @@ public class Sprite {
     /** The height in pixels of this sprite */
     private int height;
 
+
+    /** id of the sprite vbo */
+    private int vboId;
+
+    /** id of the sprite vao */
+    private int vaoId;
     /**
      * Create a new sprite from a specified image.
      *
@@ -59,32 +68,56 @@ public class Sprite {
      * @param y The y location at which to draw this sprite
      */
     public void draw(int x, int y) {
-        // store the current model matrix
-        GL45.glPushMatrix();
 
-        // bind to the appropriate texture for this sprite
-        texture.bind();
+        float[] vertices = {
+                // Left bottom triangle
+                -0.5f, 0.5f, 0f,
+                -0.5f, -0.5f, 0f,
+                0.5f, -0.5f, 0f,
+                // Right top triangle
+                0.5f, -0.5f, 0f,
+                0.5f, 0.5f, 0f,
+                -0.5f, 0.5f, 0f
+        };
 
-        // translate to the right location and prepare to draw
-        GL45.glTranslatef(x, y, 0);
-        GL45.glColor3f(1,1,1);
+        // Sending data to OpenGL requires the usage of (flipped) byte buffers
+        FloatBuffer verticesBuffer = BufferUtils.createFloatBuffer(vertices.length);
+        verticesBuffer.put(vertices);
+        verticesBuffer.flip();
 
-        // draw a quad textured to match the sprite
-        GL45.glBegin(GL45.GL_QUADS);
-        {
-            GL45.glTexCoord2f(0, 0);
-            GL45.glVertex2f(0, 0);
-            GL45.glTexCoord2f(0, texture.getHeight());
-            GL45.glVertex2f(0, height);
-            GL45.glTexCoord2f(texture.getWidth(), texture.getHeight());
-            GL45.glVertex2f(width,height);
-            GL45.glTexCoord2f(texture.getWidth(), 0);
-            GL45.glVertex2f(width,0);
-        }
-        GL45.glEnd();
+        int vertexCount = 6;
 
-        // restore the model view matrix to prevent contamination
-        GL45.glPopMatrix();
+        // Create a new Vertex Array Object in memory and select it (bind)
+// A VAO can have up to 16 attributes (VBO's) assigned to it by default
+        vaoId = GL30.glGenVertexArrays();
+        GL30.glBindVertexArray(vaoId);
+        GL45.glEnableVertexAttribArray(0);
+
+// Create a new Vertex Buffer Object in memory and select it (bind)
+// A VBO is a collection of Vectors which in this case resemble the location of each vertex.
+        vboId = GL45.glGenBuffers();
+        GL45.glBindBuffer(GL45.GL_ARRAY_BUFFER, vboId);
+        GL45.glBufferData(GL45.GL_ARRAY_BUFFER, verticesBuffer, GL45.GL_STATIC_DRAW);
+// Put the VBO in the attributes list at index 0
+        GL45.glVertexAttribPointer(0, 3, GL45.GL_FLOAT, false, 0, 0);
+
+        // Draw the vertices
+        GL45.glDrawArrays(GL45.GL_TRIANGLES, 0, vertexCount);
+
+// Deselect (bind to 0) the VBO
+        GL45.glBindBuffer(GL45.GL_ARRAY_BUFFER, 0);
+
+// Deselect (bind to 0) the VAO
+        GL45.glBindVertexArray(0);
+
+    }
+
+    public int getVboId() {
+        return vboId;
+    }
+
+    public int getVaoId() {
+        return vaoId;
     }
 
 }

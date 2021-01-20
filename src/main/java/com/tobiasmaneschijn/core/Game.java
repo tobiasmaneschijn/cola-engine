@@ -1,5 +1,7 @@
 package com.tobiasmaneschijn.core;
 
+import org.lwjgl.opengl.GL45;
+
 import java.util.ArrayList;
 
 public class Game implements GameWindowCallback{
@@ -42,7 +44,7 @@ public class Game implements GameWindowCallback{
 
     }
     public void startGame(){
-        window = new GameWindow("Cola Engine", 1920, 1080, this);
+        window = new GameWindow("Cola Engine", 1280, 720, this);
     }
 
     public GameWindow getGameWindow() {
@@ -52,22 +54,26 @@ public class Game implements GameWindowCallback{
     @Override
     public void initialise() {
          gotYou = ResourceFactory.get().getSprite("sprites/Character.gif");
-        //pressAnyKey = ResourceFactory.get().getSprite("sprites/pressanykey.gif");
-        //youWin = ResourceFactory.get().getSprite("sprites/youwin.gif");
-
-        //message = pressAnyKey;
-
-        // setup the initial game state
-        // startup
     }
 
     @Override
     public void draw() {
-
+        gotYou.draw(0,10);
     }
 
     @Override
     public void windowClosed() {
 
+
+// Disable the VBO index from the VAO attributes list
+        GL45.glDisableVertexAttribArray(0);
+
+// Delete the VBO
+        GL45.glBindBuffer(GL45.GL_ARRAY_BUFFER, 0);
+        GL45.glDeleteBuffers(gotYou.getVboId());
+
+// Delete the VAO
+        GL45.glBindVertexArray(0);
+        GL45.glDeleteVertexArrays(gotYou.getVaoId());
     }
 }

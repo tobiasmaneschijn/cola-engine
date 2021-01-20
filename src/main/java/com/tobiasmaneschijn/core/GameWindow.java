@@ -172,6 +172,8 @@ try {
         if(callback != null) {
             callback.windowClosed();
         }
+
+
     }
     /**
      * Retrieve access to the texture loader that converts images
