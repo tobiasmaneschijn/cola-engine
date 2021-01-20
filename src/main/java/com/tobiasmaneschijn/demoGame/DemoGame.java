@@ -2,6 +2,7 @@ package com.tobiasmaneschijn.demoGame;
 
 import com.tobiasmaneschijn.core.*;
 import com.tobiasmaneschijn.demoGame.entities.PlayerEntity;
+import com.tobiasmaneschijn.demoGame.entities.RotatingEntity;
 
 public class DemoGame extends Game {
 
@@ -31,10 +32,11 @@ public class DemoGame extends Game {
     public void initialise() {
         super.initialise();
         player = new PlayerEntity();
-        player.setPosition(20, 20);
+        player.setPosition(20, getGameWindow().getHeight() - 100);
         addEntity(player);
+        addEntity(new RotatingEntity());
     }
-
+    
     @Override
     public void draw() {
         super.draw();

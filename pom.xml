@@ -11,6 +11,14 @@
   <name>cola-engine</name>
   <url>http://www.tobiasmaneschijn.com</url>
 
+<repositories>
+  <repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+  </repository>
+</repositories>
+
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>14</maven.compiler.source>
@@ -30,10 +38,16 @@
         <scope>import</scope>
         <type>pom</type>
       </dependency>
+
     </dependencies>
   </dependencyManagement>
 
   <dependencies>
+    <dependency>
+      <groupId>com.github.arcnor</groupId>
+      <artifactId>universal-tween-engine</artifactId>
+      <version>6.3.4</version>
+    </dependency>
     <dependency>
       <groupId>org.lwjgl</groupId>
       <artifactId>lwjgl</artifactId>
