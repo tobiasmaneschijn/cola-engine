@@ -1,9 +1,10 @@
 package com.tobiasmaneschijn.core;
 
+import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL45;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
@@ -13,43 +14,52 @@ import static org.lwjgl.opengl.GL45.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-public class GameWindow{
-    /** The callback which should be notified of window events */
+public class GameWindow {
+    /**
+     * The callback which should be notified of window events
+     */
     private GameWindowCallback callback;
 
-    /** The window handle */
+    /**
+     * The window handle
+     */
     private long window;
 
-    /** The width of the game display area */
+    /**
+     * The width of the game display area
+     */
     private int width = 1024;
 
-    /** The height of the game display area */
+    /**
+     * The height of the game display area
+     */
     private int height = 768;
 
-    /** The loader responsible for converting images into OpenGL textures */
+    /**
+     * The loader responsible for converting images into OpenGL textures
+     */
     private TextureLoader textureLoader;
 
-    /** Title of window, we get it before our window is ready, so store it till needed */
+    /**
+     * Title of window, we get it before our window is ready, so store it till needed
+     */
     private String title = "";
     private float lastFrame;
-
-    public float getDeltaTime() {
-        return deltaTime;
-    }
-
+    private GLFWWindowSizeCallback windowSizeCallback;
+    private float aspectRatio;
+    private Matrix4f projection;
     private float deltaTime;
 
     /**
      * Create a new game window that will use OpenGL to
      * render our game.
-
      */
     public GameWindow() {
         init();
         loop();
     }
 
-    public GameWindow(String title, int width, int height,  GameWindowCallback callback) {
+    public GameWindow(String title, int width, int height, GameWindowCallback callback) {
         this.title = title;
         this.width = width;
         this.height = height;
@@ -58,13 +68,22 @@ public class GameWindow{
         init();
         loop();
     }
-    private void init(){
+
+    public float getDeltaTime() {
+        return deltaTime;
+    }
+
+    public float getAspectRatio() {
+        return aspectRatio;
+    }
+
+    private void init() {
         // Setup an error callback. The default implementation
         // will print the error message in System.err.
         GLFWErrorCallback.createPrint(System.err).set();
 
         // Initialize GLFW. Most GLFW functions will not work before doing this.
-        if ( !glfwInit() )
+        if (!glfwInit())
             throw new IllegalStateException("Unable to initialize GLFW");
 
         // Configure GLFW
@@ -74,12 +93,12 @@ public class GameWindow{
 
         // Create the window
         window = glfwCreateWindow(width, height, title, NULL, NULL);
-        if ( window == NULL )
+        if (window == NULL)
             throw new RuntimeException("Failed to create the GLFW window");
 
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
         glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-            if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE )
+            if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
                 glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
         });
 
@@ -90,12 +109,25 @@ public class GameWindow{
         textureLoader = new TextureLoader();
 
         ResourceFactory.get().setWindow(this);
-        if(callback != null) {
+        projection = new Matrix4f().ortho(0, getWidth(), getHeight(), 0, -1, 1);
+
+        if (callback != null) {
             callback.initialise();
         }
 
+        glfwSetWindowSizeCallback(window, windowSizeCallback = new GLFWWindowSizeCallback() {
+            @Override
+            public void invoke(long window, int width, int height) {
+                setResolution(width, height);
+                aspectRatio = (float) width / (float) height;
+                glViewport(0, 0, width, height);
+                projection = new Matrix4f().ortho(0, width, height, 0, -1, 1);
+                callback.windowResized(width,height);
+            }
+        });
+
         // Get the thread stack and push a new frame
-        try ( MemoryStack stack = stackPush() ) {
+        try (MemoryStack stack = stackPush()) {
             IntBuffer pWidth = stack.mallocInt(1); // int*
             IntBuffer pHeight = stack.mallocInt(1); // int*
 
@@ -104,17 +136,16 @@ public class GameWindow{
 
             // Get the resolution of the primary monitor
             GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-                // Center the window
-                if (vidmode != null) {
-                    glfwSetWindowPos(
-                            window,
-                            (vidmode.width() - pWidth.get(0)) / 2,
-                            (vidmode.height() - pHeight.get(0)) / 2
-                    );
-                }
-                    else{
-                    System.out.println("GLFW: No video mode set!");
-                }
+            // Center the window
+            if (vidmode != null) {
+                glfwSetWindowPos(
+                        window,
+                        (vidmode.width() - pWidth.get(0)) / 2,
+                        (vidmode.height() - pHeight.get(0)) / 2
+                );
+            } else {
+                System.out.println("GLFW: No video mode set!");
+            }
         } // the stack frame is popped automatically
 
 
@@ -146,7 +177,8 @@ try {
 
         gameLoop();
   */
-        }
+    }
+
     /**
      * Run the main game loop. This method keeps rendering the scene
      * and requesting that the callback update its screen.
@@ -154,14 +186,13 @@ try {
     private void loop() {
         GL.createCapabilities(); // Needed for LWJGL.
 
-   
 
         // Set the clear color
         glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 
         while (!glfwWindowShouldClose(window)) {
 
-            
+
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
@@ -187,15 +218,15 @@ try {
             if (callback != null) {
                 callback.update(deltaTime);
             }
-
         }
 
-        if(callback != null) {
+        if (callback != null) {
             callback.windowClosed();
         }
 
 
     }
+
     /**
      * Retrieve access to the texture loader that converts images
      * into OpenGL textures.
@@ -205,18 +236,6 @@ try {
      */
     TextureLoader getTextureLoader() {
         return textureLoader;
-    }
-
-    /**
-     * Set the title of this window.
-     *
-     * @param title The title to set on this window
-     */
-    public void setTitle(String title) {
-        this.title = title;
-        if(window != NULL) {
-            glfwSetWindowTitle(window, title);
-        }
     }
 
     /**
@@ -230,15 +249,12 @@ try {
         height = y;
     }
 
-
-
-
     /**
      * Register a callback that will be notified of game window
      * events.
      *
      * @param callback The callback that should be notified of game
-     * window events.
+     *                 window events.
      */
     public void setGameWindowCallback(GameWindowCallback callback) {
         this.callback = callback;
@@ -251,11 +267,9 @@ try {
      * @return True if the specified key is pressed
      */
     public boolean isKeyPressed(int keyCode) {
-       int state = glfwGetKey(window, keyCode);
+        int state = glfwGetKey(window, keyCode);
         return state == GLFW_PRESS;
     }
-
-
 
     /**
      * @return The width of the GameWindow
@@ -276,5 +290,25 @@ try {
      */
     public String getTitle() {
         return title;
+    }
+
+    /**
+     * Set the title of this window.
+     *
+     * @param title The title to set on this window
+     */
+    public void setTitle(String title) {
+        this.title = title;
+        if (window != NULL) {
+            glfwSetWindowTitle(window, title);
+        }
+    }
+
+    public Matrix4f getProjection() {
+        return projection;
+    }
+
+    public void setProjection(Matrix4f projection) {
+        this.projection = projection;
     }
 }

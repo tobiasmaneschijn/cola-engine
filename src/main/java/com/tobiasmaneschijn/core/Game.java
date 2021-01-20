@@ -1,8 +1,12 @@
 package com.tobiasmaneschijn.core;
 
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL45;
 
 import java.util.ArrayList;
+
+import org.lwjgl.system.Library.*;
+
 
 public class Game implements GameWindowCallback{
 
@@ -92,9 +96,12 @@ public class Game implements GameWindowCallback{
 
     @Override
     public void update(float deltaTime) {
-        for (Entity entity : entities) {
+        for (int i = 0, entitiesSize = entities.size(); i < entitiesSize; i++) {
+            Entity entity = entities.get(i);
+            if(entity!= null)
             entity.update(deltaTime);
         }
+
     }
 
     @Override
@@ -117,6 +124,16 @@ public class Game implements GameWindowCallback{
 
     }
 
+    @Override
+    public void windowResized(int width, int height) {
+        for (int i = 0; i < entities.size(); i++) {
+            Entity entity = entities.get(i);
+            entity.getSprite().initRenderData();
+            System.out.println("Window resize");
+        }
+
+    }
+
     public String getGameTitle() {
         return gameTitle;
     }
@@ -129,8 +146,13 @@ public class Game implements GameWindowCallback{
         entities.add(e);
     }
 
-    private void destroyEntity(Entity e) {
+    public void destroyEntity(Entity e) {
         entities.remove(e);
         removeList.add(e);
+    }
+
+
+    public static float getTime() {
+        return (float) GLFW.glfwGetTime();
     }
 }

@@ -36,6 +36,7 @@ public class Sprite {
      */
     private int vaoId;
     private Shader shader;
+    private GameWindow window;
 
 
     /**
@@ -45,6 +46,7 @@ public class Sprite {
      * @param ref    A reference to the image on which this sprite should be based
      */
     public Sprite(GameWindow window, String ref) {
+        this.window = window;
         color = new Vector3f(.5f,0,0);
 
         try {
@@ -58,14 +60,15 @@ public class Sprite {
             // a tad abrupt, but our purposes if you can't find a
             // sprite's image you might as well give up.
             System.err.println("Unable to load texture: "+ref);
+            System.err.println("Received error: " + e.getMessage());
+
             System.exit(0);
         }
 
-        Matrix4f projection = new Matrix4f()
-                .ortho(0,window.getWidth(),window.getHeight(),0, -1,1);
-        shader.setInteger("image", 0, true);
-        shader.setMatrix4("projection", projection, true);
 
+
+        shader.setInteger("image", 0, true);
+        shader.setMatrix4("projection", window.getProjection(), true);
 
     }
 
@@ -89,6 +92,10 @@ public class Sprite {
 
 
     public void initRenderData() {
+
+
+        shader.setInteger("image", 0, true);
+        shader.setMatrix4("projection", window.getProjection(), true);
 
         float vertices[] = {
                 // pos      // tex

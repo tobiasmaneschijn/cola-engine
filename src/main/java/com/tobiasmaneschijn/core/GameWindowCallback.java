@@ -30,4 +30,6 @@ public interface GameWindowCallback {
      * Notification that game window has been closed.
      */
     public void windowClosed();
+
+    public void windowResized(int width, int height);
 }
