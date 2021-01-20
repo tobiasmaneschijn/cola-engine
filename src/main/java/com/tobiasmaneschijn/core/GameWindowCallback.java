@@ -8,6 +8,11 @@ package com.tobiasmaneschijn.core;
  */
 public interface GameWindowCallback {
     /**
+     * Notification that game window has been closed.
+     */
+    public void setWindow(GameWindow window);
+
+    /**
      * Notification that game should initialise any resources it
      * needs to use. This includes loading sprites.
      */
@@ -18,6 +23,8 @@ public interface GameWindowCallback {
      * should draw/render the scene and update any game logic
      */
     public void draw();
+
+    public void update(float deltaTime);
 
     /**
      * Notification that game window has been closed.
