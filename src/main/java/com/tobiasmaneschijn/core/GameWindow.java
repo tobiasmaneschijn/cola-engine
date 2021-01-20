@@ -31,6 +31,13 @@ public class GameWindow{
 
     /** Title of window, we get it before our window is ready, so store it till needed */
     private String title = "";
+    private float lastFrame;
+
+    public float getDeltaTime() {
+        return deltaTime;
+    }
+
+    private float deltaTime;
 
     /**
      * Create a new game window that will use OpenGL to
@@ -47,7 +54,7 @@ public class GameWindow{
         this.width = width;
         this.height = height;
         setGameWindowCallback(callback);
-
+        callback.setWindow(this);
         init();
         loop();
     }
@@ -147,14 +154,23 @@ try {
     private void loop() {
         GL.createCapabilities(); // Needed for LWJGL.
 
+   
+
         // Set the clear color
-        glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+        glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 
         while (!glfwWindowShouldClose(window)) {
 
+            
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glMatrixMode(GL_MODELVIEW);
-            glLoadIdentity();
+
+
+            // calculate delta time
+            // --------------------
+            float currentFrame = (float) glfwGetTime();
+            deltaTime = currentFrame - lastFrame;
+            lastFrame = currentFrame;
+
 
             // let subsystem paint
             if (callback != null) {
@@ -165,7 +181,12 @@ try {
 
             // Poll for window events. The key callback above will only be
             // invoked during this call.
+
             glfwPollEvents();
+
+            if (callback != null) {
+                callback.update(deltaTime);
+            }
 
         }
 

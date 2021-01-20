@@ -7,9 +7,9 @@ import java.util.ArrayList;
 public class Game implements GameWindowCallback{
 
     /** The list of all the entities that exist in our game */
-    private ArrayList entities = new ArrayList();
+    private ArrayList<Entity> entities = new ArrayList<Entity>();
     /** The list of entities that need to be removed from the game this loop */
-    private ArrayList removeList = new ArrayList();
+    private ArrayList<Entity> removeList = new ArrayList<Entity>();
     /** The entity representing the player */
     private Entity ship;
     /** The speed at which the player's ship should move (pixels/sec) */
@@ -28,23 +28,32 @@ public class Game implements GameWindowCallback{
     /** True if game logic needs to be applied this loop, normally as a result of a game event */
     private boolean logicRequiredThisLoop = false;
 
-    /** The window that is being used to render the game */
+
+
+    private String gameTitle = "Unnamed Game";
+    /**
+     * The window that is being used to render the game
+     */
     private GameWindow window;
-    /** True if the fire key has been released */
-    private boolean fireHasBeenReleased = false;
 
-    /** The sprite containing the "Press Any Key" message */
-    private Sprite pressAnyKey;
-    /** The sprite containing the "You win!" message */
-    private Sprite youWin;
-    /** The sprite containing the "You lose!" message */
-    private Sprite gotYou;
-
-    public Game(){
-
+    private static Game instance;
+    
+    public static Game get(){
+        if( instance != null) return instance;
+        instance = new Game();
+        return  instance;
     }
-    public void startGame(){
-        window = new GameWindow("Cola Engine", 1280, 720, this);
+    
+    
+    public Game() {
+    }
+
+    public void startGame() {
+        startGame(1280, 720);
+    }
+
+    public void startGame(int width, int height) {
+        new GameWindow( gameTitle, width, height, this);
     }
 
     public GameWindow getGameWindow() {
@@ -52,28 +61,76 @@ public class Game implements GameWindowCallback{
     }
 
     @Override
+    public void setWindow(GameWindow window) {
+        this.window =  window;
+    }
+
+    @Override
     public void initialise() {
-         gotYou = ResourceFactory.get().getSprite("sprites/Character.gif");
+
+        for (Entity entity : entities) {
+            Sprite sprite = entity.getSprite();
+            if(sprite != null){
+                sprite.initRenderData();
+            }
+        }
+
+
     }
 
     @Override
     public void draw() {
-        gotYou.draw(0,10);
+        for (Entity entity : entities) {
+        entity.render();
+        }
+        for (Entity entity : removeList) {
+            entity.destroy();
+            removeList.remove(entity);
+        }
+
+    }
+
+    @Override
+    public void update(float deltaTime) {
+        for (Entity entity : entities) {
+            entity.update(deltaTime);
+        }
     }
 
     @Override
     public void windowClosed() {
+        removeList = entities;
+
+        // Disable the VBO index from the VAO attributes list
 
 
-// Disable the VBO index from the VAO attributes list
+        GL45.glBindBuffer(GL45.GL_ARRAY_BUFFER, 0);
         GL45.glDisableVertexAttribArray(0);
 
-// Delete the VBO
-        GL45.glBindBuffer(GL45.GL_ARRAY_BUFFER, 0);
-        GL45.glDeleteBuffers(gotYou.getVboId());
+        for (Entity entity : removeList) {
+            entity.destroy();
+        }
 
-// Delete the VAO
+        removeList.clear();
         GL45.glBindVertexArray(0);
-        GL45.glDeleteVertexArrays(gotYou.getVaoId());
+
+
+    }
+
+    public String getGameTitle() {
+        return gameTitle;
+    }
+
+    public void setGameTitle(String gameTitle) {
+        this.gameTitle = gameTitle;
+    }
+
+    public void addEntity(Entity e) {
+        entities.add(e);
+    }
+
+    private void destroyEntity(Entity e) {
+        entities.remove(e);
+        removeList.add(e);
     }
 }
