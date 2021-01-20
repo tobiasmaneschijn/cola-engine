@@ -1,4 +1,4 @@
-package com.tobiasmaneschijn;
+package com.tobiasmaneschijn.demoGame;
 
 import com.tobiasmaneschijn.core.Game;
 
@@ -10,7 +10,8 @@ public class App
 {
     public static void main( String[] args )
     {
-        Game game = new Game();
+        DemoGame game = DemoGame.get();
         game.startGame();
+
     }
 }
