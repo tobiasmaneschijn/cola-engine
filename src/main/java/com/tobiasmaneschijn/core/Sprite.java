@@ -16,6 +16,7 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class Sprite {
+    private final Transformation transformation;
     /** The texture that stores the image for this sprite */
     private Texture texture;
 
@@ -65,6 +66,7 @@ public class Sprite {
             System.exit(0);
         }
 
+         transformation = new Transformation();
 
 
         shader.setInteger("image", 0, true);
@@ -143,7 +145,7 @@ public class Sprite {
 
         // prepare transformations
         shader.use();
-        Matrix4f model = new Matrix4f();
+  /*      Matrix4f model = new Matrix4f();
         model = model.translate(new Vector3f());
         model = model.translate(new Vector3f(position, 0.0f));
 
@@ -152,8 +154,16 @@ public class Sprite {
         model = model.translate(new Vector3f(-0.5f * size.x, -0.5f * size.y, 0.0f));
 
         model = model.scale(new Vector3f(size, 1.0f));
+*/
+        Matrix4f worldMatrix =
+                transformation.getWorldMatrix(
+                        position,
+                        new Vector2f(),
+                        size.x);
 
-        shader.setMatrix4("model", model, true);
+        shader.setMatrix4("worldMatrix", worldMatrix, true);
+
+       // shader.setMatrix4("model", model, true);
         shader.setVector3f("spriteColor", color, true);
 
         glActiveTexture(GL_TEXTURE0);

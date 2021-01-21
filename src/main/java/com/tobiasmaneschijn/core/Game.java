@@ -72,6 +72,7 @@ public class Game implements GameWindowCallback{
     @Override
     public void initialise() {
 
+
         for (Entity entity : entities) {
             Sprite sprite = entity.getSprite();
             if(sprite != null){
