@@ -129,7 +129,6 @@ public class Game implements GameWindowCallback{
         for (int i = 0; i < entities.size(); i++) {
             Entity entity = entities.get(i);
             entity.getSprite().initRenderData();
-            System.out.println("Window resize");
         }
 
     }
