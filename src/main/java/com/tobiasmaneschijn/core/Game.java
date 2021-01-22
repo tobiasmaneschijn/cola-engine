@@ -102,7 +102,6 @@ public class Game implements GameWindowCallback{
             if(entity!= null)
             entity.update(deltaTime);
         }
-
     }
 
     @Override
