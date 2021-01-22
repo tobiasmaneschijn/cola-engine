@@ -1,11 +1,12 @@
-package com.tobiasmaneschijn.core;
+package com.tobiasmaneschijn.colaengine.core;
 
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenManager;
+import com.tobiasmaneschijn.colaengine.tweening.accessors.EntityAccessor;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL45;
 
 import java.util.ArrayList;
-
-import org.lwjgl.system.Library.*;
 
 
 public class Game implements GameWindowCallback{
@@ -32,6 +33,7 @@ public class Game implements GameWindowCallback{
     /** True if game logic needs to be applied this loop, normally as a result of a game event */
     private boolean logicRequiredThisLoop = false;
 
+    public static TweenManager tweenManager = new TweenManager();
 
 
     private String gameTitle = "Unnamed Game";
@@ -71,7 +73,7 @@ public class Game implements GameWindowCallback{
 
     @Override
     public void initialise() {
-
+        Tween.registerAccessor(Entity.class, new EntityAccessor());
 
         for (Entity entity : entities) {
             Sprite sprite = entity.getSprite();
@@ -102,6 +104,8 @@ public class Game implements GameWindowCallback{
             if(entity!= null)
             entity.update(deltaTime);
         }
+        tweenManager.update(deltaTime);
+
     }
 
     @Override

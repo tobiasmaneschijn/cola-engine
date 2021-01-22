@@ -1,4 +1,4 @@
-package com.tobiasmaneschijn.core;
+package com.tobiasmaneschijn.colaengine.core;
 
 
 import org.lwjgl.opengl.GL11;

@@ -1,14 +1,8 @@
 package com.tobiasmaneschijn.demoGame.entities;
 
-import aurelienribon.tweenengine.Tween;
-import aurelienribon.tweenengine.TweenEquation;
-import aurelienribon.tweenengine.TweenUtils;
-import com.tobiasmaneschijn.core.Entity;
-import com.tobiasmaneschijn.core.ResourceFactory;
-import com.tobiasmaneschijn.demoGame.DemoGame;
+import com.tobiasmaneschijn.colaengine.core.Entity;
+import com.tobiasmaneschijn.colaengine.core.ResourceFactory;
 import org.joml.Vector2f;
-
-import static org.lwjgl.glfw.GLFW.*;
 
 public class RotatingEntity extends Entity {
 

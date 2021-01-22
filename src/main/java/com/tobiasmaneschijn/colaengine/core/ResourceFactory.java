@@ -1,7 +1,4 @@
-package com.tobiasmaneschijn.core;
-
-import com.tobiasmaneschijn.core.GameWindow;
-import com.tobiasmaneschijn.core.Sprite;
+package com.tobiasmaneschijn.colaengine.core;
 
 
 /**

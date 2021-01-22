@@ -1,7 +1,6 @@
-package com.tobiasmaneschijn.core;
+package com.tobiasmaneschijn.colaengine.core;
 
 import org.joml.Vector2f;
-import org.joml.Vector3f;
 
 public class Entity {
 

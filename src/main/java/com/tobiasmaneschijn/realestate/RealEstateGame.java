@@ -1,13 +1,12 @@
 package com.tobiasmaneschijn.realestate;
 
-import com.tobiasmaneschijn.core.Entity;
-import com.tobiasmaneschijn.core.Game;
-import com.tobiasmaneschijn.core.GameWindow;
-import com.tobiasmaneschijn.demoGame.DemoGame;
-import com.tobiasmaneschijn.demoGame.entities.EnemyEntity;
-import com.tobiasmaneschijn.demoGame.entities.RotatingEntity;
+import com.tobiasmaneschijn.colaengine.core.Entity;
+import com.tobiasmaneschijn.colaengine.core.Game;
+import com.tobiasmaneschijn.colaengine.core.GameWindow;
+import com.tobiasmaneschijn.realestate.entities.DieEntity;
 import com.tobiasmaneschijn.realestate.entities.FieldEntity;
 import com.tobiasmaneschijn.realestate.entities.PlayerEntity;
+import org.joml.Random;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
 
@@ -17,7 +16,13 @@ public class RealEstateGame extends Game {
 
     private Board board;
     private ArrayList<PlayerEntity> players;
+    private DieEntity[] dice;
     private static RealEstateGame instance;
+
+
+
+    private static final Random random = new Random();
+
 
     public RealEstateGame() {
         super();
@@ -35,7 +40,16 @@ public class RealEstateGame extends Game {
         }
 
       if( GameWindow.isClicked(GLFW.GLFW_KEY_SPACE)){
-            currentFieldIndex += 1;
+
+          int[] rolls = throwDice();
+          int moveVal = 0;
+
+          for (int roll : rolls) {
+              moveVal += roll;
+          }
+
+
+          currentFieldIndex += moveVal;
             FieldEntity field = board.getFieldAtIndex(currentFieldIndex);
             if(field == null){
                 currentFieldIndex  = 0;
@@ -52,10 +66,19 @@ public class RealEstateGame extends Game {
     public void initialise() {
         super.initialise();
 
+
         board = new Board(this);
         board.initializeBoard();
-
         initPlayers();
+
+        dice = new DieEntity[2];
+
+        dice[0] = new DieEntity();
+        dice[1] = new DieEntity();
+
+        for (DieEntity die : dice) {
+            addEntity(die);
+        }
 
     }
 
@@ -74,9 +97,19 @@ public class RealEstateGame extends Game {
     @Override
     public void draw() {
         super.draw();
-
-
     }
+
+
+    public int[] throwDice(){
+        int[] rolls = new int[dice.length];
+        for (int i = 0; i < dice.length; i++) {
+            DieEntity die = dice[i];
+            rolls[i] = random.nextInt(6) + 1;
+            die.setDie(rolls[i]);
+        }
+        return rolls;
+    }
+
 
     @Override
     public void destroyEntity(Entity e) {

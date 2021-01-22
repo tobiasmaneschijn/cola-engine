@@ -1,6 +1,6 @@
 package com.tobiasmaneschijn.demoGame;
 
-import com.tobiasmaneschijn.core.*;
+import com.tobiasmaneschijn.colaengine.core.*;
 import com.tobiasmaneschijn.demoGame.entities.EnemyEntity;
 import com.tobiasmaneschijn.demoGame.entities.PlayerEntity;
 import com.tobiasmaneschijn.demoGame.entities.RotatingEntity;

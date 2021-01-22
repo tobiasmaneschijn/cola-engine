@@ -1,4 +1,4 @@
-package com.tobiasmaneschijn.core;
+package com.tobiasmaneschijn.colaengine.core;
 
 import java.awt.Color;
 import java.awt.Graphics;

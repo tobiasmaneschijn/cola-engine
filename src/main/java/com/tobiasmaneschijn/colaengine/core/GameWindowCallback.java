@@ -1,4 +1,4 @@
-package com.tobiasmaneschijn.core;
+package com.tobiasmaneschijn.colaengine.core;
 
 /**
  * An interface describing any class that wishes to be notified

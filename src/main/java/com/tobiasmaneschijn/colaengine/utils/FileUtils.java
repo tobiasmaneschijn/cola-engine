@@ -1,8 +1,7 @@
-package com.tobiasmaneschijn.utils;
+package com.tobiasmaneschijn.colaengine.utils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 
 public class FileUtils {
 

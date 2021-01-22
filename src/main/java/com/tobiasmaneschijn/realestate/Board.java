@@ -1,10 +1,8 @@
 package com.tobiasmaneschijn.realestate;
 
-import com.tobiasmaneschijn.core.ResourceFactory;
-import com.tobiasmaneschijn.core.Sprite;
+import com.tobiasmaneschijn.colaengine.core.ResourceFactory;
+import com.tobiasmaneschijn.colaengine.core.Sprite;
 import com.tobiasmaneschijn.realestate.entities.FieldEntity;
-import com.tobiasmaneschijn.realestate.entities.PlayerEntity;
-import org.joml.Vector2f;
 
 import java.util.ArrayList;
 

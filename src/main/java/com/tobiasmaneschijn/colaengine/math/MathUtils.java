@@ -1,6 +1,5 @@
-package com.tobiasmaneschijn.math;
+package com.tobiasmaneschijn.colaengine.math;
 
-import org.joml.Math;
 import org.joml.Vector2f;
 
 public class MathUtils {

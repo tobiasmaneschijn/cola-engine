@@ -1,12 +1,11 @@
-package com.tobiasmaneschijn.core;
+package com.tobiasmaneschijn.colaengine.core;
 
-import com.tobiasmaneschijn.utils.FileUtils;
+import com.tobiasmaneschijn.colaengine.utils.FileUtils;
 import org.joml.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
-import java.util.Vector;
 
 public class Shader
 {

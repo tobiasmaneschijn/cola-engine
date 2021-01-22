@@ -1,7 +1,5 @@
 package com.tobiasmaneschijn.demoGame;
 
-import com.tobiasmaneschijn.core.Game;
-
 /**
  * Hello world!
  *

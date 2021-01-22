@@ -1,7 +1,7 @@
 package com.tobiasmaneschijn.demoGame.entities;
 
-import com.tobiasmaneschijn.core.Entity;
-import com.tobiasmaneschijn.core.ResourceFactory;
+import com.tobiasmaneschijn.colaengine.core.Entity;
+import com.tobiasmaneschijn.colaengine.core.ResourceFactory;
 import com.tobiasmaneschijn.demoGame.DemoGame;
 import org.joml.Vector2f;
 import org.joml.Math;

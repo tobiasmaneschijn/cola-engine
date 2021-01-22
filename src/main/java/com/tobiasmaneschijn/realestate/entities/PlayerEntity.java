@@ -1,9 +1,12 @@
 package com.tobiasmaneschijn.realestate.entities;
 
-import com.tobiasmaneschijn.core.Entity;
-import com.tobiasmaneschijn.core.ResourceFactory;
-import com.tobiasmaneschijn.core.Sprite;
-import com.tobiasmaneschijn.math.MathUtils;
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.equations.Sine;
+import com.tobiasmaneschijn.colaengine.core.Entity;
+import com.tobiasmaneschijn.colaengine.core.ResourceFactory;
+import com.tobiasmaneschijn.colaengine.core.Sprite;
+import com.tobiasmaneschijn.colaengine.tweening.accessors.EntityAccessor;
+import com.tobiasmaneschijn.realestate.RealEstateGame;
 import org.joml.Vector2f;
 
 public class PlayerEntity extends Entity {
@@ -15,6 +18,7 @@ public class PlayerEntity extends Entity {
         setSize(new Vector2f(getSprite().getWidth() * 1f, getSprite().getHeight() * 1f));
         getSprite().initRenderData();
         targetPosition = new Vector2f(getPosition());
+        Tween.to(this, EntityAccessor.SCALE_XY, 2f) .target(getSprite().getWidth() * 1.1f, getSprite().getHeight() * 1.2f) .ease(Sine.INOUT) .repeatYoyo(100, 0) .start(RealEstateGame.tweenManager);
 
     }
 
