@@ -63,6 +63,7 @@ public class Entity {
 
     public void setSprite(Sprite sprite) {
         this.sprite = sprite;
+        getSprite().initRenderData();
     }
 
     @Override
