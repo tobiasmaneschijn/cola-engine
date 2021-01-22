@@ -8,6 +8,8 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL45.*;
@@ -49,6 +51,9 @@ public class GameWindow {
     private float aspectRatio;
     private Matrix4f projection;
     private float deltaTime;
+
+    private static ArrayList pressed = new ArrayList();
+    private static boolean[] keys = new boolean[65536];
 
     /**
      * Create a new game window that will use OpenGL to
@@ -98,6 +103,7 @@ public class GameWindow {
 
         // Setup a key callback. It will be called every time a key is pressed, repeated or released.
         glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+            glfwKeyCallback(window, key, scancode, action, mods);
             if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
                 glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
         });
@@ -263,12 +269,27 @@ try {
     /**
      * Check if a particular key is current pressed.
      *
-     * @param keyCode The code associated with the key to check
+     * @param key The code associated with the key to check
      * @return True if the specified key is pressed
      */
-    public boolean isKeyPressed(int keyCode) {
-        int state = glfwGetKey(window, keyCode);
-        return state == GLFW_PRESS;
+    public boolean isKeyPressed(int key) {
+        return keys[key];
+    }
+
+    public static boolean isPressed(int key){
+        return keys[key];
+    }
+
+    public static boolean isClicked(int key){
+        if (!keys[key]) return false;
+        if (pressed.contains(key)) return false;
+        pressed.add(key);
+        return true;
+    }
+
+    public static void glfwKeyCallback(long window, int key, int scanCode, int action, int mods){
+        keys[key] = action != GLFW_RELEASE;
+        if(action == GLFW_RELEASE && pressed.contains(new Integer(key))) pressed.remove(new Integer(key));
     }
 
     /**
